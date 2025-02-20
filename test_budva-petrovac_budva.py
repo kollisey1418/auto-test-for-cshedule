@@ -428,4 +428,3 @@ def test_sv_st_to_budva(driver):
                     except Exception:
                         logging.info("Popup2 не найден")
                         continue  # Продолжаем цикл даже при ошибке
-

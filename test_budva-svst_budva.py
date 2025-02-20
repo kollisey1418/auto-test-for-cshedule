@@ -512,4 +512,3 @@ def test_sv_st_to_budva(driver):
                     except Exception:
                         logging.info("\u2705Popup2 был закрыт штатно")
                         continue  # Продолжаем цикл даже при ошибке
-

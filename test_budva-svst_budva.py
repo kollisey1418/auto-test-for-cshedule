@@ -79,7 +79,7 @@ def validate_schedule_budva_to_sv_st(driver, interval, active_schedule_path, jso
 
         
 def test_budva_to_sv_st(driver):
-    driver.get("http://localhost/budva-sveti-stefan-budva.html") #Открытие страницы
+    driver.get("https://xey.gbo.mybluehost.me/budva-sveti-stefan-budva.html")  # Открытие страницы
 
 
 

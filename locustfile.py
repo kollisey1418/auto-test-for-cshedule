@@ -6,12 +6,21 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import logging
 import time
+import sys
 
-# Настраиваем логирование в консоль
+start_time = time.time()
+
+# Создаем обработчик для записи логов в файл
+file_handler = logging.FileHandler("test.log", encoding="utf-8")
+
+# Создаем обработчик для вывода логов в Run/консоль
+console_handler = logging.StreamHandler(sys.__stdout__)  # <--- Используем sys.__stdout__
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[file_handler, console_handler]  # Добавляем два обработчика
 )
 
 
@@ -39,21 +48,68 @@ class SeleniumUser(User):
     @task
     def full_user_flow(self):
         """ Основной тестовый сценарий """
-        logging.info("Загружаем страницу")
+        logging.info(" Загружаем страницу index.html \U000023F3")
         self.driver.get("https://xey.gbo.mybluehost.me/index.html")
-        logging.info("Страница загрузилась")
+        logging.info(" Страница index.html загрузилась \u2705")
 
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        logging.info("Страница загрузила все элементы")
+        logging.info("Страница загрузила все элементы \u2705")
 
         # Ожидание и клик по первой найденной кнопке
         more_detailed_buttons = self.wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "card-button")))
-        logging.info("Ожидаем, когда можно будет нажать на кнопку More Detailed")
+        logging.info("Ожидаем, когда можно будет нажать на кнопку More Detailed \U000023F3 ")
+        logging.info("Ожидаем, что на кнопку More Detailed можно нажать \U000023F3 ")
 
         if more_detailed_buttons:
-            more_detailed_buttons[0].click()
-            logging.info("Клик по первой кнопке More Detailed")
+            first_buttom = more_detailed_buttons[0]
+            self.wait.until(EC.element_to_be_clickable(first_buttom))
+            first_buttom.click()
+            logging.info("Клик по первой кнопке More Detailed \u2735")
         else:
-            logging.info("Кнопка More Detailed не найдена")
+            logging.info("Кнопка More Detailed не найдена \u2705")
 
-        time.sleep(1)
+        try:
+            logging.info("Ожидаем страницу с расписанием Sveti Stefan \U000023F3")
+            self.driver.get("https://xey.gbo.mybluehost.me/budva-sveti-stefan-budva.html")
+            self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+            load_time = time.time() - start_time
+            logging.info(f"⏳ Время загрузки страницы: {load_time:.2f} секунд")
+
+            if "404" in self.driver.page_source:
+                raise Exception("Страница не найдена \u274c")
+            logging.info("Страница Sveti Stefan загрузилась \u2705")
+        except Exception as e:
+            logging.info(f"Страница не открыта: {e} \u274c")
+
+        try:
+            logging.info("Waiting the button Schedule_button")
+            schedule_buttons = self.wait.until(EC.presence_of_all_elements_located((By.ID, "detailedScheduleButton")))
+            logging.info("Button found \u2705")
+        except Exception as e:
+            logging.info(f"The button was not found: {e} \u274c")
+
+        if schedule_buttons:
+            sch_but_01 = schedule_buttons
+            logging.info("Ждем загрузки кнопки Detailed Schedule \U000023F3")
+            try:
+                self.wait.until(EC.element_to_be_clickable((By.ID, "detailedScheduleButton")))
+                logging.info("Кнопка Detailed Schedule загрузилась \u2705")
+            except Exception as e:
+                logging.info(f"The button was not loud: {e} \u274c")
+                sch_but_01.click()
+                logging.info("Кнопка нажата ")
+
+        else:
+            logging.info("Клик не сработал \u274c")
+
+        try:
+            logging.info("Загружаем попап с расписанием Budva-Sveti Stefan \U000023F3")
+            self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "popup-content")))
+            logging.info("Popup загрузился")
+
+        except Exception as e:
+            logging.info(f"Popup не найден {e} \u274c")
+
+
+time.sleep(5)
